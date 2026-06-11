@@ -47,8 +47,9 @@ RUN mkdir -p /var/www/html/assets/images/products \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/assets/images
 
-# Expose port 80
-EXPOSE 80
+# Copy entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Start Apache
-CMD ["apache2-foreground"]
+EXPOSE 80
+CMD ["/entrypoint.sh"]
