@@ -46,10 +46,13 @@ RUN mkdir -p /var/www/html/assets/images/products \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/assets/images
-
-# Copy entrypoint
-COPY entrypoint.sh /entrypoint.sh
+    
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
 CMD ["/entrypoint.sh"]
+RUN printf '#!/bin/bash\nPORT=${PORT:-80}\nsed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\nsed -i "s/*:80/*:$PORT/g" /etc/apache2/sites-available/000-default.conf\necho "Apache starting on port $PORT"\nexec apache2-foreground\n' > /entrypoint.sh \
+    && chmod +x /entrypoint.sh
+
+EXPOSE 80
+CMD ["/bin/bash", "/entrypoint.sh"]
