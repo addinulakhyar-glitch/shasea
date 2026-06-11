@@ -1,0 +1,52 @@
+Options -Indexes
+Options +FollowSymLinks
+
+# ── Security Headers ──────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# ── Rewrite (ROOT level — no /shasea/ prefix) ─────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Block direct access to config and includes
+    RewriteRule ^config/       - [F,L]
+    RewriteRule ^includes/     - [F,L]
+    RewriteRule ^docker/       - [F,L]
+    RewriteRule ^\.env         - [F,L]
+
+    ErrorDocument 404 /pages/404.php
+</IfModule>
+
+# ── Cache static assets ───────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg             "access plus 1 month"
+    ExpiresByType image/png              "access plus 1 month"
+    ExpiresByType image/webp             "access plus 1 month"
+    ExpiresByType text/css               "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType application/json       "access plus 0 seconds"
+</IfModule>
+
+# ── Compression ───────────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css
+    AddOutputFilterByType DEFLATE application/javascript application/json
+</IfModule>
+
+# ── Block sensitive files ─────────────────────────────────────
+<FilesMatch "\.(sql|log|env|md|git|json|lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Allow composer.json access blocked above — Railway needs it
+<Files "composer.json">
+    Order allow,deny
+    Deny from all
+</Files>

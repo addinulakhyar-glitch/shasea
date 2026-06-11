@@ -1,0 +1,11 @@
+{
+    "name": "shasea/website",
+    "description": "Shasea — Elegant Muslim Fashion Website",
+    "type": "project",
+    "require": {
+        "php": ">=8.1"
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
